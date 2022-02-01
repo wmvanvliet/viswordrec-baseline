@@ -3,3 +3,5 @@ __pycache__
 training_datasets/render_stimulus/Cargo.lock
 training_datasets/render_stimulus/debug
 training_datasets/render_stimulus/target
+data
+figures

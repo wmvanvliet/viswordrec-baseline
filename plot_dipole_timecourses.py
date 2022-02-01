@@ -1,27 +1,30 @@
 """
-Compare grand-average activity at the Epasana dipoles with the model activity.
+Plot the grand-average timecourses for each of the three dipole groups as
+defined in Vartiainen et al. 2011.
 """
 import mne
 import numpy as np
 from tqdm import tqdm
 import pandas as pd
 from matplotlib import pyplot as plt
+import os
 
-from config import fname, subjects
-
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = './data'
+
+# Whether to overwrite the existing figure
+overwrite = False
 
 metadata = []
 dip_timecourses = []
 dip_selection = []
+subjects = range(1, 16)
 for subject in tqdm(subjects):
     m = pd.read_csv(f'{data_path}/events/sub-{subject:02d}_task-epasana_events.tsv', sep='\t')
-    data = np.load(f'{data_path}/dipoles/sub-{subject:02d}/meg/sub-{subject:02d}_task-epasana_dipole_timecourses.npz')
-    dip_t = data['proj']
-    times = data['times']
+    dip_t = np.load(f'{data_path}/dipoles/sub-{subject:02d}/meg/sub-{subject:02d}_task-epasana_dipole_timecourses.npz')['proj']
     dip_t = dip_t[:, np.argsort(m.tif_file), :]
     dip_timecourses.append(dip_t)
-    dip_sel = pd.read_csv(fname.dip_selection(subject=subject), sep='\t')
+    dip_sel = pd.read_csv(f'{data_path}/dipoles/sub-{subject:02d}/meg/sub-{subject:02d}_task-epasana_dipole_selection.tsv', sep='\t')
     dip_sel['subject'] = subject
     dip_selection.append(dip_sel)
     m['subject'] = subject
@@ -29,23 +32,11 @@ for subject in tqdm(subjects):
 metadata = pd.concat(metadata, ignore_index=True)
 dip_selection = pd.concat(dip_selection, ignore_index=True)
 
-stimuli = pd.read_csv(fname.stimulus_selection)
+stimuli = pd.read_csv(f'{data_path}/stimuli.csv')
 stimuli['type'] = stimuli['type'].astype('category')
 
 ##
-# Time ranges used for statistical analysis in Vartiainen et al. 2011
-time_rois = {
-    'LeftOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
-    'RightOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
-    'LeftOcciTemp2': slice(*np.searchsorted(times, [0.14, 0.2])),
-    'RightOcciTemp2': slice(*np.searchsorted(times, [0.185, 0.220])),
-    'LeftTemp3': slice(*np.searchsorted(times, [0.300, 0.400])),
-    'RightTemp3': slice(*np.searchsorted(times, [0.300, 0.400])),
-    'LeftFront2-3': slice(*np.searchsorted(times, [0.300, 0.500])),
-    'RightFront2-3': slice(*np.searchsorted(times, [0.300, 0.500])),
-    'LeftPar2-3': slice(*np.searchsorted(times, [0.250, 0.350])),
-}
-
+# Plot the dipole timecourses for three dipole groups
 groups = ['LeftOcci1', 'LeftOcciTemp2', 'LeftTemp3']
 group_desc = ['Occipital', 'Occipital-temporal', 'Temporal']
 intervals = [(0.064, 0.115), (0.114, 0.200), (0.300, 0.500)]
@@ -81,4 +72,7 @@ for group, desc, interval, ax in zip(groups, group_desc, intervals, axes.flat):
         if group == groups[1]:
             ax.set_xlabel('Time (ms)')
 plt.tight_layout()
-plt.savefig('figures/dipole_timecourses.pdf')
+
+if not os.path.exists('figures/dipole_timecourses.pdf') or overwrite:
+    os.makedirs('figures', exist_ok=True)
+    plt.savefig('figures/dipole_timecourses.pdf')

@@ -16,8 +16,13 @@ import network
 import dataloader
 import render_stimulus
 
-# The model to perform the analysis on. I keep changing this around as I train new models.
+import os
+
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = './data'
+
+# Whether to overwrite the existing figure
+overwrite = False
 
 classes = dataloader.WebDataset(f'{data_path}/datasets/epasana-10kwords').classes
 classes.append(pd.Series(['noise'], index=[10000]))

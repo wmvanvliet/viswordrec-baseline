@@ -1,0 +1,7 @@
+mne
+numpy
+tqdm
+pandas
+matplotlib
+scipy
+mayavi

@@ -8,9 +8,13 @@ from matplotlib import pyplot as plt
 from tqdm import tqdm
 from scipy.stats import zscore, rankdata
 import pickle
+import os
 
-# Path to the OSF downloaded data
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = './data'
+
+# Whether to overwrite the existing figure and data
+overwrite = False
 
 # Brain landmarks to show
 selected_landmarks = ['LeftOcci1', 'LeftOcciTemp2', 'LeftTemp3']
@@ -21,7 +25,7 @@ stimulus_types = ['word', 'pseudoword', 'consonants', 'symbols', 'noisy word']
 # The subjects to plot the data for
 subjects = range(1, 16)
 
-# Read in the epochs metadata and dipole information from each subject
+# Read in the metadata and dipole information from each subject
 metadata = []
 dip_timecourses = []
 dip_selection = []
@@ -36,7 +40,6 @@ for subject in tqdm(subjects):
     dip_t = data['proj']
     dip_t = dip_t[:, np.argsort(m.tif_file), :]
     dip_timecourses.append(dip_t)
-    times = data['times']
 
     # Select the dipoles corresponding to the landmarks.
     # These are different for each subject.
@@ -46,7 +49,10 @@ for subject in tqdm(subjects):
 metadata = pd.concat(metadata, ignore_index=True)
 dip_selection = pd.concat(dip_selection, ignore_index=True)
 
-# For each landmark, we analyze a different time interval
+## For each landmark, we analyze a different time interval
+
+# Time ranges used for statistical analysis in Vartiainen et al. 2011
+times = np.arange(dip_t.shape[2]) / 600 - 0.235
 time_rois = {
     'LeftOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
     'RightOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
@@ -107,8 +113,9 @@ for landmark, ax in zip(selected_landmarks, axes.flat):
 plt.tight_layout()
 mean_acts = np.array(mean_acts)
 
-stimuli = pd.read_csv(f'{data_path}/stimuli.csv')
-stimuli['type'] = stimuli['type'].astype('category')
+if not os.path.exists('figures/dipole_activation_patterns.pdf') or overwrite:
+    os.makedirs('figures', exist_ok=True)
+    plt.savefig('figures/dipole_activation_patterns.pdf')
 
 ## Load model layer activations
 with open(f'{data_path}/model_layer_activity.pkl', 'rb') as f:
@@ -119,6 +126,8 @@ layer_names = d['layer_names']
 layer_acts = pd.DataFrame(layer_activity.T, columns=layer_names)
 
 ## Show the behavior of each model layer for each stimulus
+stimuli = pd.read_csv(f'{data_path}/stimuli.csv')
+stimuli['type'] = stimuli['type'].astype('category')
 fig, axes = plt.subplots(1, len(layer_activity), sharex=True, sharey=True, figsize=(10, 3))
 for i, (act, ax) in enumerate(zip(layer_activity, axes.flat)):
     x_offset = 0
@@ -142,30 +151,15 @@ for i, (act, ax) in enumerate(zip(layer_activity, axes.flat)):
         x_offset += len(selection)
 plt.tight_layout()
 
-##
-def pearsonr(x, y, *, x_axis=-1, y_axis=-1):
-    """Compute Pearson correlation along the given axis."""
-    x = zscore(x, axis=x_axis)
-    y = zscore(y, axis=y_axis)
-    return np.tensordot(x, y, (x_axis, y_axis)) / x.shape[x_axis]
+if not os.path.exists('figures/model_activation_patterns.pdf') or overwrite:
+    os.makedirs('figures', exist_ok=True)
+    plt.savefig('figures/model_activation_patterns.pdf')
 
-def spearmanr(x, y, *, x_axis=-1, y_axis=-1):
-    """Compute Spearman rank correlation along the given axis."""
-    x = rankdata(x, axis=x_axis)
-    y = rankdata(y, axis=y_axis)
-    return pearsonr(x, y, x_axis=x_axis, y_axis=y_axis)
-
-r1 = pearsonr(mean_acts, layer_activity)
-r2 = spearmanr(mean_acts, layer_activity)
-fig, axes = plt.subplots(1, len(selected_landmarks), sharex=True)
-for r, ax, landmark in zip(r1, axes.flat, selected_landmarks):
-    ax.bar(np.arange(len(r)), r)
-    ax.set_title(landmark)
-
-
-## Save giant CSV file
+## Save giant CSV file that will be used for single-subject statistics later.
 data = landmark_acts.join(stimuli[['tif_file']].join(layer_acts).set_index('tif_file'), on='tif_file')
-#data.to_csv(f'{data_path}/brain_model_comparison/brain_model_comparison_dipoles.csv')
+if not os.path.exists(f'{data_path}/brain_model_comparison/brain_model_comparison_dipoles.csv') or overwrite:
+    os.makedirs(f'{data_path}/brain_model_comparison', exist_ok=True)
+    data.to_csv(f'{data_path}/brain_model_comparison/brain_model_comparison_dipoles.csv')
 
 # Compute some basic statistics
 ga_data = data.groupby('tif_file').mean()
