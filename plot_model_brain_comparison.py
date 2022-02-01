@@ -2,7 +2,6 @@
 Create the plots in which the behavior of the layers in the model are compared
 to the behavior of the epasana dipoles.
 """
-import mne
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -33,9 +32,11 @@ for subject in tqdm(subjects):
     metadata.append(m)
 
     # Dipole timecourses for each epoch (make sure it's in the correct order!)
-    dip_t = np.load(f'{data_path}/dipoles/sub-{subject:02d}/meg/sub-{subject:02d}_task-epasana_dipole_timecourses.npz')['proj']
+    data = np.load(f'{data_path}/dipoles/sub-{subject:02d}/meg/sub-{subject:02d}_task-epasana_dipole_timecourses.npz')
+    dip_t = data['proj']
     dip_t = dip_t[:, np.argsort(m.tif_file), :]
     dip_timecourses.append(dip_t)
+    times = data['times']
 
     # Select the dipoles corresponding to the landmarks.
     # These are different for each subject.
@@ -47,15 +48,15 @@ dip_selection = pd.concat(dip_selection, ignore_index=True)
 
 # For each landmark, we analyze a different time interval
 time_rois = {
-    'LeftOcci1': slice(*np.searchsorted(epochs.times, [0.065, 0.115])),
-    'RightOcci1': slice(*np.searchsorted(epochs.times, [0.065, 0.115])),
-    'LeftOcciTemp2': slice(*np.searchsorted(epochs.times, [0.14, 0.2])),
-    'RightOcciTemp2': slice(*np.searchsorted(epochs.times, [0.185, 0.220])),
-    'LeftTemp3': slice(*np.searchsorted(epochs.times, [0.300, 0.400])),
-    'RightTemp3': slice(*np.searchsorted(epochs.times, [0.300, 0.400])),
-    'LeftFront2-3': slice(*np.searchsorted(epochs.times, [0.300, 0.500])),
-    'RightFront2-3': slice(*np.searchsorted(epochs.times, [0.300, 0.500])),
-    'LeftPar2-3': slice(*np.searchsorted(epochs.times, [0.250, 0.350])),
+    'LeftOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
+    'RightOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
+    'LeftOcciTemp2': slice(*np.searchsorted(times, [0.14, 0.2])),
+    'RightOcciTemp2': slice(*np.searchsorted(times, [0.185, 0.220])),
+    'LeftTemp3': slice(*np.searchsorted(times, [0.300, 0.400])),
+    'RightTemp3': slice(*np.searchsorted(times, [0.300, 0.400])),
+    'LeftFront2-3': slice(*np.searchsorted(times, [0.300, 0.500])),
+    'RightFront2-3': slice(*np.searchsorted(times, [0.300, 0.500])),
+    'LeftPar2-3': slice(*np.searchsorted(times, [0.250, 0.350])),
 }
 
 ## For each subject, compute mean dipole activation for each landmark
