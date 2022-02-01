@@ -3,20 +3,21 @@ Run the stimuli used in the MEG experiment through the model and record the
 activity in each layer.
 """
 import torch
+from torchvision import transforms
 import numpy as np
 import pickle
 import pandas as pd
 import mkl
 mkl.set_num_threads(4)
+from PIL import Image
+from tqdm import tqdm
 
 import network
-import utils
 import dataloader
-from config import fname
 
-# The model to perform the analysis on. I keep changing this around as I train new models.
-model_name = 'vgg11_first_imagenet_then_epasana-10kwords_noise'
-classes = dataloader.WebDataset('/m/nbe/scratch/reading_models/datasets/epasana-10kwords').classes
+data_path = './data'
+
+classes = dataloader.WebDataset(f'{data_path}/datasets/epasana-10kwords').classes
 classes.append(pd.Series(['noise'], index=[10000]))
 
 # In order to get word2vec vectors, the KORAANI class was replaced with
@@ -44,8 +45,8 @@ images = torch.cat(images, 0)
 # Load the model and feed through the images. Make sure to feed the images
 # through as a single batch, because I don't trust the BatchNormalization2d
 # layers to behave predictably otherwise.
-checkpoint = torch.load('../data/models/%s.pth.tar' % model_name, map_location='cpu')
-model = networks.vgg11.from_checkpoint(checkpoint, freeze=True)
+checkpoint = torch.load(f'{data_path}/models/vgg11_first_imagenet_then_epasana-10kwords_noise.pth.tar', map_location='cpu')
+model = network.VGG11.from_checkpoint(checkpoint, freeze=True)
 
 layer_outputs = model.get_layer_activations(
     images,
@@ -75,10 +76,7 @@ layer_names = [
 mean_activity = np.array([np.square(a.reshape(len(stimuli), -1)).mean(axis=1)
                           for a in layer_activity])
 
-with open(fname.layer_activity(model_name=model_name), 'wb') as f:
-    pickle.dump(dict(layer_names=layer_names, layer_activity=layer_activity), f)
-
-with open(fname.mean_layer_activity(model_name=model_name), 'wb') as f:
+with open(f'{data_path}/model_layer_activity.pkl', 'wb') as f:
     pickle.dump(dict(layer_names=layer_names, mean_activity=mean_activity), f)
 
 # Translate output of the model to text predictions
