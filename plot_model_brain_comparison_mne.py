@@ -8,6 +8,7 @@ import pandas as pd
 from mayavi import mlab
 import matplotlib.pyplot as plt
 from scipy.stats import zscore
+import os
 
 # Path to the OSF downloaded data
 data_path = './data'
@@ -53,6 +54,7 @@ foci2 = np.array(foci2)
 foci3 = np.array(foci3)
 
 mne.viz.set_3d_backend('mayavi')
+os.makedirs('figures', exist_ok=True)
 
 ## Layers 1-5 vs dipole group 1 (Early visual response)
 for layer_name in layer_names[:5]:
