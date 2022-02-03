@@ -4,7 +4,7 @@ This repository contains the model and code to recreate the figures in:
 
 Marijn van Vliet, Oona Rinkinen, Takao Shimizu, Barry Devereux and Riitta Salmelin (2022), "A large-scale computational model to accurately predict early brain activity in response to written words", preprint.
 
-![](figures/results.png | width=800)
+<img src="figures/results.png" width="800">
 
 
 ## Installing model, data and python dependencies
