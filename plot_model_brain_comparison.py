@@ -33,6 +33,9 @@ for subject in tqdm(subjects):
     # Metadata: what stimulus was shown during each epoch?
     m = pd.read_csv(f'{data_path}/events/sub-{subject:02d}_task-epasana_events.tsv', sep='\t')
     m['subject'] = subject
+    # Select only relevant trials
+    m = m[m.value >= 2]
+    m = m[m.value <= 11]
     metadata.append(m)
 
     # Dipole timecourses for each epoch (make sure it's in the correct order!)
@@ -52,7 +55,7 @@ dip_selection = pd.concat(dip_selection, ignore_index=True)
 ## For each landmark, we analyze a different time interval
 
 # Time ranges used for statistical analysis in Vartiainen et al. 2011
-times = np.arange(dip_t.shape[2]) / 600 - 0.235
+times = (np.arange(dip_t.shape[2]) - 140) / 600
 time_rois = {
     'LeftOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
     'RightOcci1': slice(*np.searchsorted(times, [0.065, 0.115])),
