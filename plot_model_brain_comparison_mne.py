@@ -5,8 +5,6 @@ import mne
 import numpy as np
 import pickle
 import pandas as pd
-from mayavi import mlab
-import matplotlib.pyplot as plt
 from scipy.stats import zscore
 import os
 
@@ -26,8 +24,7 @@ layer_acts = pd.DataFrame(layer_activity.T, columns=layer_names)
 
 # The brain will be plotted from two angles.
 views = ['lateral', 'ventral']
-#map_surface = 'white'
-map_surface = None
+map_surface = 'white'
 
 ##
 # Read in the dipoles and morph their positions to the fsaverage brain.
