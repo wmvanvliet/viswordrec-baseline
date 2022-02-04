@@ -4,18 +4,15 @@ locations of the selected 3 groups of dipoles. This forms the top part of the
 main results figure in the paper.
 """
 import mne
-from mayavi import mlab
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = './data'
-
 
 # The brain will be plotted from two angles.
 views = ['lateral', 'ventral']
-#map_surface = 'white'
-map_surface = None
+map_surface = 'white'
 
 ##
 # Read in the dipoles in Talairach coordinates. The resulting positions will be

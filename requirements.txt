@@ -1,4 +1,4 @@
-mne
+mne>=1.0
 numpy
 tqdm
 pandas
