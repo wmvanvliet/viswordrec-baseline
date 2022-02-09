@@ -84,17 +84,16 @@ def load_datasets(train=True):
     label_offset = 0
     num_classes = 0
     for dtype in args.data:
-        dataset = dataloader.WebDataset(
+        dataset = dataloader.TFRecord(
             dtype,
             train=train,
             transform=transform,
-            labels=args.labels,
             label_offset=label_offset
         )
         datasets.append(dataset)
         label_offset += len(dataset.classes)
         num_classes += len(dataset.classes)
-    dataset = dataloader.Combined(datasets)
+    dataset = torch.utils.data.ConcatDataset(datasets)
     return dataset, num_classes
 
 train_dataset, target_num_classes = load_datasets(train=True)
@@ -136,7 +135,7 @@ if args.resume:
 print(model)
 
 train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=args.batch_size, shuffle=False,
+    train_dataset, batch_size=args.batch_size, shuffle=True,
     num_workers=args.workers, pin_memory=False)
 
 val_loader = torch.utils.data.DataLoader(
