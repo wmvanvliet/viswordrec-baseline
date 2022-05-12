@@ -8,9 +8,10 @@ authors = ["Marijn van Vliet"]
 
 [dependencies]
 rusttype="0.9"
-image="0.23"
+image="0.24.2"
 rand="0.8"
-imageproc={git = "https://github.com/image-rs/imageproc", branch="master"}
+#imageproc={git = "https://github.com/image-rs/imageproc", branch="master"}
+imageproc="0.23.0"
 lazy_static="1.4"
 
 [lib]
