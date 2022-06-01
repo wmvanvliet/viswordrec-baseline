@@ -1,4 +1,5 @@
 """
+Use Captum to plot the pixel contributions to the output.
 """
 import torch
 import numpy as np
@@ -8,15 +9,11 @@ mkl.set_num_threads(4)
 from captum.attr import DeepLift
 import matplotlib.pyplot as plt
 from PIL import Image
-from io import BytesIO
 from tqdm import tqdm
 from torchvision import transforms
 
 import network
 import dataloader
-import render_stimulus
-
-import os
 
 # Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = './data'
@@ -24,12 +21,12 @@ data_path = './data'
 # Whether to overwrite the existing figure
 overwrite = False
 
-classes = dataloader.WebDataset(f'{data_path}/datasets/epasana-10kwords').classes
+classes = dataloader.TFRecord(f'{data_path}/training_datasets/epasana-10kwords').classes
 classes.append(pd.Series(['noise'], index=[10000]))
 
 # Load the TIFF images presented in the MEG experiment and apply the
 # ImageNet preprocessing transformation to them.
-stimuli = pd.read_csv('stimuli.csv')
+stimuli = pd.read_csv(f'{data_path}/stimuli.csv')
 preproc = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -74,10 +71,6 @@ predictions = stimuli.copy()
 predictions['predicted_text'] = classes[model_output.argmax(axis=1)].values
 predictions['predicted_class'] = model_output.argmax(axis=1)
 
-def make_image(word, rotation=0):
-    img = Image.open(BytesIO(bytes(render_stimulus.render(word, f'{data_path}/fonts/arial.ttf', 30, rotation, 0))))
-    return preproc(img)
-
 def plot_attributions(img, word=None, cl=None, rotation=0, ax=None, scale=.12):
     if cl is None and word is not None:
         cl = np.flatnonzero(classes == word)[0]
@@ -87,7 +80,6 @@ def plot_attributions(img, word=None, cl=None, rotation=0, ax=None, scale=.12):
     attributions = attributions.detach().numpy().mean(axis=1)
     if ax is None:
         fig, ax = plt.subplots(1, 1)
-    # vmax = np.abs(attributions).max()
     vmax = scale
     vmin = -vmax
     ax.imshow(attributions[0][75:150], vmin=vmin, vmax=vmax, cmap='RdBu_r')
