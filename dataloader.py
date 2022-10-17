@@ -1,16 +1,15 @@
 """
 PyTorch dataloader for the TFRecord format.
 """
-from bytesio import BytesIO
+from io import BytesIO
 import os.path as op
 import struct
 
 import pandas as pd
-import protobuf_format
+import example_pb2
 from PIL import Image
 from torchvision.datasets import VisionDataset
 import numpy as np
-
 
 
 class TFRecord(VisionDataset):
@@ -67,7 +66,7 @@ class TFRecord(VisionDataset):
         if self.file.readinto(crc_bytes) != 4:
             raise RuntimeError("Failed to read the end token.")
 
-        example = protobuf_format.Example()
+        example = example_pb2.Example()
         example.ParseFromString(datum_bytes_view)
 
         features = {}
