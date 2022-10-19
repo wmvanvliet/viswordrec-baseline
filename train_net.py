@@ -84,7 +84,7 @@ def load_datasets(train=True):
     label_offset = 0
     num_classes = 0
     for dtype in args.data:
-        dataset = dataloader.TFRecord(
+        dataset = dataloader.WebDataset(
             dtype,
             train=train,
             transform=transform,
@@ -93,7 +93,7 @@ def load_datasets(train=True):
         datasets.append(dataset)
         label_offset += len(dataset.classes)
         num_classes += len(dataset.classes)
-    dataset = torch.utils.data.ConcatDataset(datasets)
+    dataset = dataloader.Combined(datasets)
     return dataset, num_classes
 
 train_dataset, target_num_classes = load_datasets(train=True)
@@ -106,7 +106,7 @@ if args.resume:
 
     print(f"=> loading checkpoint '{args.resume}'")
     checkpoint = torch.load(args.resume, map_location='cpu')
-    model = VGG11.from_checkpoint(checkpoint, num_classes=target_num_classes, freeze=args.freeze)
+    model = VGG11.from_checkpoint(checkpoint, num_classes=target_num_classes)
 else:
     model = VGG11(num_classes=target_num_classes)
 
@@ -135,11 +135,11 @@ if args.resume:
 print(model)
 
 train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=args.batch_size, shuffle=True,
+    train_dataset, batch_size=args.batch_size,
     num_workers=args.workers, pin_memory=False)
 
 val_loader = torch.utils.data.DataLoader(
-    val_dataset, batch_size=args.batch_size, shuffle=False,
+    val_dataset, batch_size=args.batch_size,
     num_workers=args.workers, pin_memory=False)
 
 def train(train_loader, model, criterion, optimizer, epoch):
