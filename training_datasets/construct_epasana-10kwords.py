@@ -75,21 +75,22 @@ more_words = pd.DataFrame(more_words)
 words = pd.concat([words, more_words], ignore_index=True)
 words = words.drop_duplicates()
 
-# Fix lemmatization of some words
+# Some of the epasana words are known in the w2v database under a different
+# lemmatization.
+words_in_w2v = words.copy()
 for i, w in enumerate(words.values):
     if w == 'maalari':
-        words.iloc[i] = 'taide#maalari'
+        words_in_w2v.iloc[i] = 'taide#maalari'
     elif w == 'luominen':
-        words.iloc[i] = 'luomus'
+        words_in_w2v.iloc[i] = 'luomus'
     elif w == 'oleminen':
-        words.iloc[i] = 'olemus'
+        words_in_w2v.iloc[i] = 'olemus'
     elif w == 'eläminen':
-        words.iloc[i] = 'elatus'
+        words_in_w2v.iloc[i] = 'elatus'
     elif w == 'koraani':
-        words.iloc[i] = 'koraanin'
-
-# Perform a lookup for the w2v vectors for each chosen word
-vectors = vectors[words[0]]
+        words_in_w2v.iloc[i] = 'koraanin'
+# Perform the lookup for the w2v vectors for each chosen word
+vectors = vectors[words_in_w2v[0]]
 
 # Words in the epasana experiment were always shown in upper case
 words = pd.Series([word.upper() for word in words[0]])
@@ -116,8 +117,9 @@ chosen_noise_levels = []
 n = 100 if args.set == 'train' else 10
 labels = np.zeros(len(words) * n, dtype=int)
 
-makedirs(args.path, exist_ok=True)
-writer = webdataset.TarWriter(f'{args.path}/{args.set}.tar')
+makedirs(f'{args.path}/{args.set}', exist_ok=True)
+writer = webdataset.ShardWriter(f'{args.path}/{args.set}/shard-%04d.tar',
+                                maxcount=10_000)
 
 pbar = tqdm(total=n * len(words))
 for i in range(n):

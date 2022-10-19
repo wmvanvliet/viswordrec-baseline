@@ -29,8 +29,9 @@ chosen_noise_levels = []
 
 n = 50_000 if args.set == 'train' else 5_000
 
-makedirs(args.path, exist_ok=True)
-writer = webdataset.TarWriter(f'{args.path}/{args.set}.tar')
+makedirs(f'{args.path}/{args.set}', exist_ok=True)
+writer = webdataset.ShardWriter(f'{args.path}/{args.set}/shard-%04d.tar',
+                                maxcount=1_000)
 
 for i in tqdm(range(n), total=n):
     noise_level = rng.choice(noise_levels)
