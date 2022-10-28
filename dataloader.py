@@ -129,7 +129,7 @@ class WebDataset(IterableDataset):
         self.vectors = np.atleast_2d(np.loadtxt(op.join(root, 'vectors.csv'), delimiter=',', skiprows=1, usecols=np.arange(1, 301), encoding='utf8', dtype=np.float32, comments=None))
         self.classes = self.meta.groupby('label').agg('first')['text']
         self.class_to_idx = {name: i for i, name in enumerate(self.classes)}
-        self.dataset = iter(wds.WebDataset(glob(f'{root}/{base_fname}/*.tar'), shardshuffle=True).shuffle(1000).decode('pil').to_tuple('jpeg', 'cls'))
+        self.dataset = iter(wds.WebDataset(glob(f'{root}/{base_fname}/*.tar'), shardshuffle=True).shuffle(1000).decode('pil').to_tuple('png', 'cls'))
         if labels not in ['int', 'vector']:
             raise ValueError(f'Invalid label type {self.label}, needs to be either "int" or "vector"')
 
