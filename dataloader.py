@@ -129,12 +129,14 @@ class WebDataset(IterableDataset):
         self.vectors = np.atleast_2d(np.loadtxt(op.join(root, 'vectors.csv'), delimiter=',', skiprows=1, usecols=np.arange(1, 301), encoding='utf8', dtype=np.float32, comments=None))
         self.classes = self.meta.groupby('label').agg('first')['text']
         self.class_to_idx = {name: i for i, name in enumerate(self.classes)}
-        self.dataset = iter(wds.WebDataset(glob(f'{root}/{base_fname}/*.tar'), shardshuffle=True).shuffle(1000).decode('pil').to_tuple('png', 'cls'))
+        self.dataset = iter(wds.WebDataset(glob(f'{root}/{base_fname}/*.tar'), shardshuffle=True).shuffle(1000).decode('pil'))
         if labels not in ['int', 'vector']:
             raise ValueError(f'Invalid label type {self.label}, needs to be either "int" or "vector"')
 
     def __next__(self):
-        img, target = next(self.dataset)
+        entry = next(self.dataset)
+        target = entry['cls']
+        img = entry.get('png', entry.get('jpg', entry.get('jpeg')))
 
         if self.labels == 'vector':
             vec = self.vectors[target]
@@ -145,7 +147,7 @@ class WebDataset(IterableDataset):
             img = self.transform(img)
 
         if self.labels == 'int':
-            return img, target
+            return img, target + self.label_offset
         elif self.labels == 'vector':
             return img, (target, vec)
 
@@ -176,6 +178,6 @@ class Combined(IterableDataset):
                         yield next(source)
                 except StopIteration:
                     return
-                    
+
     def __len__(self):
         return sum([len(ds) for ds in self.datasets])
