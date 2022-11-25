@@ -5,6 +5,7 @@ from io import BytesIO
 import os.path as op
 import struct
 from glob import glob
+from itertools import cycle
 
 import pandas as pd
 import example_pb2
@@ -166,16 +167,11 @@ class Combined(IterableDataset):
         self.datasets = datasets
 
     def __iter__(self):
-        sources = [iter(ds) for ds in self.datasets]
-        gcd = np.gcd.reduce([len(ds) for ds in self.datasets])
-        n_times = [len(ds) // gcd for ds in self.datasets]
-        while True:
-            for source, n in zip(sources, n_times):
-                try:
-                    for _ in range(n):
-                        yield next(source)
-                except StopIteration:
-                    return
+        sources = [cycle(iter(ds)) for ds in self.datasets]
+        n = np.max([len(ds) for ds in self.datasets])
+        for _ in range(n):
+            for source in sources:
+                yield next(source)
                     
     def __len__(self):
         return sum([len(ds) for ds in self.datasets])
