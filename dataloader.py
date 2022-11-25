@@ -169,11 +169,16 @@ class Combined(IterableDataset):
         self.datasets = datasets
 
     def __iter__(self):
-        sources = [cycle(iter(ds)) for ds in self.datasets]
-        n = np.max([len(ds) for ds in self.datasets])
-        for _ in range(n):
-            for source in sources:
-                yield next(source)
-                    
+        sources = [iter(ds) for ds in self.datasets]
+        n = np.array([len(ds) for ds in self.datasets])
+        repeats = np.round(np.max(n) / n).astype(int)
+        for i in range(np.max(n)):
+            for repeat_every, source in zip(repeats, sources):
+                if i % repeat_every == 0:
+                    try:
+                        yield next(source)
+                    except StopIteration:
+                        continue
+
     def __len__(self):
-        return np.max([len(ds) for ds in self.datasets]) * len(self.datasets)
+        return np.sum([len(ds) for ds in self.datasets])
