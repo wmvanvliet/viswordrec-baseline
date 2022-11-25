@@ -176,4 +176,4 @@ class Combined(IterableDataset):
                 yield next(source)
                     
     def __len__(self):
-        return sum([len(ds) for ds in self.datasets])
+        return np.max([len(ds) for ds in self.datasets]) * len(self.datasets)
