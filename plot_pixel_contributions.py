@@ -21,7 +21,7 @@ data_path = './data'
 # Whether to overwrite the existing figure
 overwrite = False
 
-classes = dataloader.TFRecord(f'{data_path}/training_datasets/epasana-10kwords').classes
+classes = dataloader.WebDataset(f'{data_path}/training_datasets/epasana-10kwords').classes
 classes.append(pd.Series(['noise'], index=[10000]))
 
 # Load the TIFF images presented in the MEG experiment and apply the
