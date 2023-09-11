@@ -2,7 +2,7 @@
 
 This repository contains the model and code to recreate the figures in:
 
-Marijn van Vliet, Oona Rinkinen, Takao Shimizu, Barry Devereux and Riitta Salmelin (2022), "A large-scale computational model to accurately predict early brain activity in response to written words", preprint.
+Marijn van Vliet, Oona Rinkinen, Takao Shimizu, Anni-Mari Niskanen, Barry Devereux and Riitta Salmelin (2023), "Convolutional networks can model the functional modulation of MEG responses during reading", preprint.
 
 <img src="figures/results.png" width="800">
 
@@ -44,12 +44,15 @@ python training_datasets/construct_words-freq.py data/training_datasets/10kwords
 
 ## Training the model
 
-A pre-trained version of the model is included in the OSF data (`models/vgg11stochastic_first_imagenet_then_10kwords-freq.pth.tar`).
-However, if you want to train it from scratch, the `train_net.py` script can be used to do it.
-The ImageNet pre-trained version of the model must be used in this case:
+The network architecture of all the models are defined in `networks.py`.
+The `VGG11Stochastic` architecture is that of the final model.
+A pre-trained version of the models is included in the OSF data (final model: `models/vgg11stochastic_first_imagenet_then_10kwords-freq.pth.tar`).
+However, if you want to train a model from scratch, the `train_net.py` script can be used to do it.
+The ImageNet pre-trained version of the model must be used in this case.
+For example, to train the final model:
 
 ```bash
-python train_net.py --resume data/models/vgg11_imagenet.pth.tar
+python train_net.py --arch vgg11stochastic --resume data/models/vgg11stochastic_imagenet.pth.tar data/training_datasets/10kwords-freq
 ```
 
 The training script will generate a `checkpoint.pth.tar` file after each epoch and a `best_model.pth.tar` file that contains the overall best performing model.
@@ -60,9 +63,9 @@ The training script will generate a `checkpoint.pth.tar` file after each epoch a
 The following scripts can be run to reproduce the figures in the paper, and some of the computations:
 
 ```
-model_layer_activity.py            - Run the stimuli through the model and get the mean activation of each layer
-plot_dipole_locations.py           - Plot the locations of the ECD groups as used in the analysis.
-plot_dipole_timecourses.py         - Plot the grand-average signal timecourses of each ECD group.
-plot_model_brain_correlation.py    - Plot the comparison between ECD groups and layers in the final model.
-plot_model_brain_correlations.py   - Plot the comparison between ECD groups and layers in several models.
+model_layer_activity.py               - Run the stimuli through the model and get the mean activation of each layer
+plot_dipole_timecourses.py            - Plot the grand-average signal timecourses of each ECD group.
+plot_model_brain_correlation.py       - Plot the comparison between ECD groups and layers in the final model.
+plot_model_brain_correlations.py      - Plot the comparison between ECD groups and layers in several models.
+compute_model_brain_comparison_mne.py - Correlate the activity within each layer with the distributed MNE source estimate
 ```
