@@ -50,3 +50,24 @@ plt.tight_layout()
 if not os.path.exists('figures/dipole_timecourses.pdf') or overwrite:
     os.makedirs('figures', exist_ok=True)
     plt.savefig('figures/dipole_timecourses.pdf')
+
+dipole_acts = pd.read_csv(f'{data_path}/dipoles/grand_average_dipole_activation.csv')
+fig, axes = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(5, 3))
+for group, desc, ax in zip(groups, group_desc, axes.flat):
+    for i, stimulus_type in enumerate(stimulus_types):
+        act = dipole_acts.query(f'type=="{stimulus_type}"')[group]
+        v = ax.violinplot(act, [i/3], showmeans=False, showextrema=False)
+        for b in v['bodies']:
+            # get the center
+            m = np.mean(b.get_paths()[0].vertices[:, 0])
+            # modify the paths to not go further right than the center
+            b.get_paths()[0].vertices[:, 0] = np.clip(b.get_paths()[0].vertices[:, 0], -np.inf, m)
+            # set the color
+            b.set_facecolor(colors[i])
+        ax.plot([i/3-0.2, i/3-0.02], np.repeat(act.mean(), 2), color=colors[i], label=stimulus_type)
+        ax.xaxis.set_visible(False)
+        ax.set_facecolor('#eee')
+        ax.set_facecolor('#fafbfc')
+        for pos in ['top', 'bottom', 'left', 'right']:
+            ax.spines[pos].set_visible(False)
+    ax.set_title(desc)
