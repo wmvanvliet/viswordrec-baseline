@@ -6,3 +6,4 @@ matplotlib
 scipy
 mayavi
 webdataset
+statsmodels
