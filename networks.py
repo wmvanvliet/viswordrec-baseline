@@ -251,12 +251,6 @@ class VGG11(nn.Module):
                 for layer in model.classifier:
                     for param in layer.parameters():
                         param.requires_grad = False
-                print("=> disabling tracking batchnorm running stats")
-                for m in model.modules():
-                    if isinstance(m, nn.BatchNorm2d):
-                        m.track_running_stats = False
-                        m.running_mean = None
-                        m.running_var = None
         return model
 
 

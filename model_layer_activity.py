@@ -20,6 +20,14 @@ data_path = './data'
 # The model to perform the analysis on. I keep changing this around as I train new models.
 model_name = 'vgg11stochastic_first_imagenet_then_10kwords-freq'
 
+# Whether to reset back norm running stats. You want to turn this on when
+# evaluating the amount of activity within the layers in response to wildly
+# different stimulus images. In our study, we have this turned on because the
+# noise embedded words are very different from the other stimuli. When
+# evaluating stimulus images that are more similar, or evaluating raw
+# classification accuracy, you want to turn this off.
+reset_batchnorm_stats = True
+
 # Get the images that were presented during the MEG experiment
 stimuli = pd.read_csv(f'{data_path}/stimuli.csv')
 
@@ -71,7 +79,15 @@ classes = metadata.groupby('label').agg('first')['text']
 
 # Load the model and feed through the images
 checkpoint = torch.load(f'{data_path}/models/{model_name}.pth.tar', map_location='cpu')
-model = getattr(networks, arch).from_checkpoint(checkpoint, freeze=True, classifier_size=classifier_size).train()
+model = getattr(networks, arch).from_checkpoint(checkpoint, classifier_size=classifier_size).test()
+
+print("=> resetting tracking batchnorm running stats")
+if reset_batchnorm_stats:
+    for m in model.modules():
+        if isinstance(m, torch.nn.BatchNorm2d):
+            m.track_running_stats = False
+            m.running_mean = None
+            m.running_var = None
 
 layer_outputs = model.get_layer_activations(images)
 layer_activity = []
