@@ -79,7 +79,7 @@ classes = metadata.groupby('label').agg('first')['text']
 
 # Load the model and feed through the images
 checkpoint = torch.load(f'{data_path}/models/{model_name}.pth.tar', map_location='cpu')
-model = getattr(networks, arch).from_checkpoint(checkpoint, classifier_size=classifier_size).test()
+model = getattr(networks, arch).from_checkpoint(checkpoint, classifier_size=classifier_size).eval()
 
 print("=> resetting tracking batchnorm running stats")
 if reset_batchnorm_stats:
