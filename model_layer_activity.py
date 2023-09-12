@@ -92,10 +92,6 @@ if reset_batchnorm_stats:
 layer_outputs = model.get_layer_activations(images)
 layer_activity = []
 for output in layer_outputs:
-    if output.shape[-1] == 201 or output.shape[-1] == 1001 or output.shape[-1] == 5001 or output.shape[-1] == 10001:
-        print('Removing nontext class')
-        output = output[:, :-1]
-        print('New output shape:', output.shape)
     layer_activity.append(output)
 mean_activity = np.array([np.sqrt(np.square(a.reshape(len(stimuli), -1)).sum(axis=1))
                           for a in layer_activity])
