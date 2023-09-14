@@ -34,11 +34,17 @@ cargo build --release
 cp target/release/librender_stimulus.so ../render_stimulus.so
 ```
 
-With the Rust code compiled, the main image generation script can be run:
+With the Rust code compiled, the main image generation script can be run to generate the various training sets used in the paper.
 
 ```bash
-python training_datasets/construct_words-freq.py data/training_datasets/10kwords-freq train
-python training_datasets/construct_words-freq.py data/training_datasets/10kwords-freq test
+python training_datasets/construct_words.py --vocab=250 --add-words=./include_words.txt data/training_datasets/250words train
+python training_datasets/construct_words.py --vocab=250 --add-words=./include_words.txt data/training_datasets/250words test
+python training_datasets/construct_words.py --vocab=1000 --add-words=./include_words.txt data/training_datasets/1kwords train
+python training_datasets/construct_words.py --vocab=1000 --add-words=./include_words.txt data/training_datasets/1kwords test
+python training_datasets/construct_words.py --vocab=10000 --add-words=./include_words.txt data/training_datasets/10kwords train
+python training_datasets/construct_words.py --vocab=10000 --add-words=./include_words.txt data/training_datasets/10kwords test
+python training_datasets/construct_words.py --vocab=10000 --freq --add-words=./include_words.txt data/training_datasets/10kwords-freq train
+python training_datasets/construct_words.py --vocab=10000 --freq --add-words=./include_words.txt data/training_datasets/10kwords-freq test
 ```
 
 
