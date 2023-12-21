@@ -4,6 +4,9 @@ tqdm
 pandas
 matplotlib
 scipy
-mayavi
 webdataset
 statsmodels
+multiprocess
+gensim
+torch
+torchvision
