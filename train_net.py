@@ -127,7 +127,7 @@ if args.resume:
 
     print(f"=> loading checkpoint '{args.resume}'")
     checkpoint = torch.load(args.resume, map_location='cpu')
-    model = networks.__dict__[args.arch].from_checkpoint(checkpoint, num_classes=target_num_classes, freeze=args.freeze, classifier_size=args.classifier_size)
+    model = networks.__dict__[args.arch].from_checkpoint(checkpoint, num_classes=target_num_classes, classifier_size=args.classifier_size)
 else:
     model = networks.__dict__[args.arch](num_classes=target_num_classes, classifier_size=args.classifier_size)
 
