@@ -71,11 +71,11 @@ The training script will generate a `checkpoint.pth.tar` file after each epoch a
 The following scripts can be run to reproduce the figures in the paper, and some of the computations:
 
 ```
-model_layer_activity.py               - Run the stimuli through the model and get the mean activation of each layer
-plot_dipole_timecourses.py            - Plot the grand-average signal timecourses of each ECD group.
-plot_model_brain_comparison.py        - Plot the comparison between ECD groups and layers in several models.
-plot_model_brain_correlation.py       - Plot the correlation between ECD groups and layers in the final model.
-plot_model_brain_comparison_mne.py    - Plot the correlation between the activity within each layer and the distributed MNE source estimate
-plot_hyperparameter_tuning.py         - Plot the exploration of hyperparameters.
-plot_post_hoc_exploration.py          - Plot the post-hoc exploration of several contrasts on the model
+model_layer_activity.py            - Run the stimuli through the model and get the mean activation of each layer.
+plot_dipole_timecourses.py         - Plot the grand-average signal timecourses of each ECD group (Figure 1).
+plot_model_brain_comparison.py     - Plot the comparison between ECD groups and layers in several models (Figures 3 and 4).
+plot_hyperparameter_tuning.py      - Plot the exploration of hyperparameters (Figure 5).
+plot_model_brain_correlation.py    - Plot the correlation between ECD groups and layers in the final model (Figure 6A).
+plot_model_brain_comparison_mne.py - Plot the correlation between the activity within each layer and the distributed MNE source estimate (Figure 6B)
+plot_post_hoc_exploration.py       - Plot the post-hoc exploration of several contrasts on the model (Figure 7).
 ```
