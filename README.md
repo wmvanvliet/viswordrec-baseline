@@ -76,5 +76,6 @@ plot_dipole_timecourses.py            - Plot the grand-average signal timecourse
 plot_model_brain_comparison.py        - Plot the comparison between ECD groups and layers in several models.
 plot_model_brain_correlation.py       - Plot the correlation between ECD groups and layers in the final model.
 plot_model_brain_comparison_mne.py    - Plot the correlation between the activity within each layer and the distributed MNE source estimate
+plot_hyperparameter_tuning.py         - Plot the exploration of hyperparameters.
 plot_post_hoc_exploration.py          - Plot the post-hoc exploration of several contrasts on the model
 ```
