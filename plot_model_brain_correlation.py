@@ -69,7 +69,7 @@ def plt_cmp(landmark, layer):
         )
         sns.kdeplot(data=data_sel, x=landmark, ax=ax_distx, color=color)
         sns.kdeplot(data=data_sel, y=layer, ax=ax_disty, color=color)
-    ax.set_xlabel(f"{landmark} (fT)")
+    ax.set_xlabel(f"{landmark} (z-scores)")
     ax.set_ylabel(f"{layer} (z-scores)")
 
     xmin = data[landmark].min()

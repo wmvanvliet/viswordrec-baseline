@@ -7,6 +7,5 @@ scipy
 webdataset
 statsmodels
 multiprocess
-gensim
 torch
 torchvision
