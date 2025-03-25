@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import os
 
-# Path to the OSF downloaded data
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = './data'
 
 stimuli = pd.read_csv(f'{data_path}/stimuli.csv')

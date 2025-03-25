@@ -37,14 +37,16 @@ cp target/release/librender_stimulus.so ../render_stimulus.so
 With the Rust code compiled, the main image generation script can be run to generate the various training sets used in the paper.
 
 ```bash
-python training_datasets/construct_words.py --vocab=250 --add-words=./include_words.txt data/training_datasets/250words train
-python training_datasets/construct_words.py --vocab=250 --add-words=./include_words.txt data/training_datasets/250words test
-python training_datasets/construct_words.py --vocab=1000 --add-words=./include_words.txt data/training_datasets/1kwords train
-python training_datasets/construct_words.py --vocab=1000 --add-words=./include_words.txt data/training_datasets/1kwords test
-python training_datasets/construct_words.py --vocab=10000 --add-words=./include_words.txt data/training_datasets/10kwords train
-python training_datasets/construct_words.py --vocab=10000 --add-words=./include_words.txt data/training_datasets/10kwords test
-python training_datasets/construct_words.py --vocab=10000 --freq --add-words=./include_words.txt data/training_datasets/10kwords-freq train
-python training_datasets/construct_words.py --vocab=10000 --freq --add-words=./include_words.txt data/training_datasets/10kwords-freq test
+python training_datasets/construct_words.py --vocab=250 --add-words=training_datasets/include_words.txt data/training_datasets/250words train
+python training_datasets/construct_words.py --vocab=250 --add-words=training_datasets/include_words.txt data/training_datasets/250words test
+python training_datasets/construct_words.py --vocab=1000 --add-words=training_datasets/include_words.txt data/training_datasets/1kwords train
+python training_datasets/construct_words.py --vocab=1000 --add-words=training_datasets/include_words.txt data/training_datasets/1kwords test
+python training_datasets/construct_words.py --vocab=5000 --add-words=training_datasets/include_words.txt data/training_datasets/5kwords train
+python training_datasets/construct_words.py --vocab=5000 --add-words=training_datasets/include_words.txt data/training_datasets/5kwords test
+python training_datasets/construct_words.py --vocab=10000 --add-words=training_datasets/include_words.txt data/training_datasets/10kwords train
+python training_datasets/construct_words.py --vocab=10000 --add-words=training_datasets/include_words.txt data/training_datasets/10kwords test
+python training_datasets/construct_words.py --vocab=10000 --freq --add-words=training_datasets/include_words.txt data/training_datasets/10kwords-freq train
+python training_datasets/construct_words.py --vocab=10000 --freq --add-words=training_datasets/include_words.txt data/training_datasets/10kwords-freq test
 ```
 
 
@@ -71,7 +73,8 @@ The following scripts can be run to reproduce the figures in the paper, and some
 ```
 model_layer_activity.py               - Run the stimuli through the model and get the mean activation of each layer
 plot_dipole_timecourses.py            - Plot the grand-average signal timecourses of each ECD group.
-plot_model_brain_correlation.py       - Plot the comparison between ECD groups and layers in the final model.
-plot_model_brain_correlations.py      - Plot the comparison between ECD groups and layers in several models.
-compute_model_brain_comparison_mne.py - Correlate the activity within each layer with the distributed MNE source estimate
+plot_model_brain_comparison.py        - Plot the comparison between ECD groups and layers in several models.
+plot_model_brain_correlation.py       - Plot the correlation between ECD groups and layers in the final model.
+plot_model_brain_comparison_mne.py    - Plot the correlation between the activity within each layer and the distributed MNE source estimate
+plot_post_hoc_exploration.py          - Plot the post-hoc exploration of several contrasts on the model
 ```

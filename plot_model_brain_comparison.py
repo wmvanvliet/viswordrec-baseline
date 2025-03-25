@@ -13,7 +13,7 @@ from matplotlib.ticker import MultipleLocator
 from scipy.stats import ttest_ind, zscore
 from statsmodels.stats.multitest import fdrcorrection
 
-# Path to the OSF downloaded data
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = "./data"
 
 # Whether to overwrite the existing figure

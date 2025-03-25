@@ -19,7 +19,7 @@ import networks
 sys.path.append("training_datasets")
 import render_stimulus
 
-# Path to the OSF downloaded data
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = "./data"
 
 # Whether to overwrite the existing figure
@@ -451,10 +451,10 @@ df_randombigrams["bigramfreq"] = bigram_freqs
 
 ## Make pretty plot
 colors = ["C0", "C0", "C0", "C0", "C0", "C1", "C1", "C2"]
-fig, axes = plt.subplots(1, 11, sharex=True, sharey=True, figsize=(15, 3))
+fig, axes = plt.subplots(nrows=2, ncols=6, sharex=True, sharey=True, figsize=(9, 6))
 
 # Straight-up correlations
-axes_iter = iter(axes)
+axes_iter = iter(axes[0, :])
 
 ax = next(axes_iter)
 ax.bar(np.arange(8), correlate(df_noise, "noise_level"), color=colors)
@@ -506,6 +506,7 @@ ax.set_title("Font family")
 ax.grid(axis="y", which="both")
 ax.set_axisbelow(True)
 
+axes_iter = iter(axes[1, :])
 ax = next(axes_iter)
 ax.bar(np.arange(8), correlate(df_sizes, "size"), color=colors)
 ax.axhline(0, color="black", linewidth=1.5)

@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 from render_stimulus import render
 
-# Set this to where you downloaded the OSF dataset to
+# Path where you downloaded the OSF data to: https://osf.io/nu2ep/
 data_path = "../data"
 
 # Parse command-line arguments
